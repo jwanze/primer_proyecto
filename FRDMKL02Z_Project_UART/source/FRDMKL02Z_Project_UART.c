@@ -1,37 +1,3 @@
-/*
- * Copyright 2016-2021 NXP
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of NXP Semiconductor, Inc. nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
- 
-/**
- * @file    FRDMKL02Z_Project_UART.c
- * @brief   Application entry point.
- */
 #include <stdio.h>
 #include "board.h"
 #include "peripherals.h"
@@ -50,7 +16,30 @@
  * @brief   Application entry point.
  */
 int main(void) {
-  	/* Init board hardware. */
+	SIM->SCGC5|=1<<10;// activa señal de reloj
+	  	int t=0;
+	  	int s=10000000;//control velocidad de colores
+
+
+    //LED AZUL PIN 10
+	PORTB->PCR[10] |= 1 << 8; //activa puertob pin como gpio
+	GPIOB->PDDR |= 1 << 10; //configura pin 10 como salida
+	GPIOB->PCOR |= 0 << 10; //cambia el valor en el pin
+	GPIOB->PTOR |= 1 << 10;
+
+	//LED ROJO PIN 6
+	PORTB->PCR[6] |= 1 << 8; //activa puertob pin como gpio
+	GPIOB->PDDR |= 1 << 6; //configura pin 10 como salida
+	GPIOB->PCOR |= 0 << 6; //cambia el valor en el pin
+	GPIOB->PTOR |= 1 << 6;
+
+	//LED VERDE PIN 7
+	PORTB->PCR[7] |= 1 << 8; //activa puertob pin como gpio
+	GPIOB->PDDR |= 1 << 7; //configura pin 10 como salida
+	GPIOB->PCOR |= 0 << 7; //cambia el valor en el pin
+	GPIOB->PTOR |= 1 << 7;
+
+	/* Init board hardware. */
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
@@ -69,6 +58,28 @@ int main(void) {
     		status=uart0LeerByteDesdeBufferCircular(&nuevo_byte);
     		if(status==kStatus_Success){
     			printf("dato:%c\r\n",nuevo_byte);
+				// led rojo PTOR niega el valor actual del pin 6 del puerto B
+				if (nuevo_byte == 'R') {
+					GPIOB->PTOR = 1 << 6;
+				}
+				if (nuevo_byte == 'r') {
+					GPIOB->PTOR = 1 << 6;
+				}
+				// led verde PTOR niega el valor actual del pin 7 del puerto B
+				if (nuevo_byte == 'G') {
+					GPIOB->PTOR = 1 << 7;
+				}
+				if (nuevo_byte == 'g') {
+					GPIOB->PTOR = 1 << 7;
+				}
+				// led azul PTOR niega el valor actual del pin 10 del puerto B
+				if (nuevo_byte == 'B') {
+					GPIOB->PTOR = 1 << 10;
+				}
+				if (nuevo_byte == 'b') {
+					GPIOB->PTOR = 1 << 10;
+				}
+
     		}else{
     			printf("error\r\n");
     		}
